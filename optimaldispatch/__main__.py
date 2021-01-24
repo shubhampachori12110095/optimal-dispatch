@@ -51,13 +51,14 @@ def _optimize(args):
 
     solution = opt.utils.decode_solution(problem, x_best)
     f_val, g_val, h_val = problem.evaluate(solution)
+    g_inf, h_inf = problem.calculate_infeasibility(g_val, h_val)
 
     # Print result
     print("Cost: {:.4f}".format(f_val))
     print("Iterations: {}".format(iterations))
     print("Runtime (seconds): {:.4f}".format(runtime))
-    print("Infeasibility (inequality constraints): {:.4f}".format(sum(g_val)))
-    print("Infeasibility (equality constraints): {:.4f}".format(sum(h_val)))
+    print("Infeasibility (inequality constraints): {:.4f}".format(sum(g_inf)))
+    print("Infeasibility (equality constraints): {:.4f}".format(sum(h_inf)))
 
     # Write best solution to JSON file
     with open(solution_path, "w") as solution_file:

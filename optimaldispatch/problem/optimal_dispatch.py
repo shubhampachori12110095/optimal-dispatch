@@ -303,7 +303,7 @@ class OptimalDispatch(object):
         """
         _, g, h = self.evaluate(solution)
         inf_g, inf_h = self.calculate_infeasibility(g, h, eps)
-        return sum(inf_g) + sum(inf_h) > 0
+        return (sum(inf_g) + sum(inf_h)) > 0
 
     def draw_solution(self, solution, label="optimaldispatch", block=False, interactive=False, show=True):
         """
