@@ -1,0 +1,10 @@
+# =================================================================================================================================
+# NAME                              SWITCH                                         TYPE   VALUES      [CONDITIONS (using R syntax)]
+# =================================================================================================================================
+mutation_learning_period            "--param mutation:learning-period "            i      (10, 100)
+crossover_learning_period           "--param crossover:learning-period "           i      (10, 100)
+crossover_update_frequency          "--param crossover:update-frequency "          i      (1, 100)
+selection_exploitation_frequency    "--param selection:exploitation:frequency "    i      (1, 500)
+selection:exploitation:iterations   "--param selection:exploitation:iterations "   i      (1, 50)
+selection:stochastic-rank:threshold "--param selection:stochastic-rank:threshold " r      (0.1, 0.9)
+selection:fitness:g                 "--param selection:fitness:g "                 i      (10, 1000)
