@@ -25,7 +25,7 @@ digits = 2
 
 ## Number of calls to targetRunner to execute in parallel. Values 0 or 1 mean 
 ## no parallelization.
-parallel = 6
+parallel = 10
 
 ## A value of 0 silences all debug messages. Higher values provide
 ## more verbose debug messages.

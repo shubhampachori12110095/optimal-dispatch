@@ -3,8 +3,8 @@
 > **Contributors:** Maria Izabel C. Santos<sup>1,4</sup>, André L. Maravilha<sup>2,4</sup>, Wadaed Uturbey<sup>3</sup>, Lucas S. Batista<sup>3,4</sup>  
 > <sup>1</sup> *Graduate Program in Electrical Engineering - Universidade Federal de Minas Gerais ([url](https://www.ppgee.ufmg.br/))*  
 > <sup>2</sup> *Dept. of Informatics, Management and Design - Centro Fed. de Edu. Tecnológica de Minas Gerais ([url](https://www.cefetmg.br/))*  
-> <sup>3</sup> *Dept. Electrical Engineering, Universidade Federal de Minas Gerais ([DEE](http://www.dee.ufmg.br/), [UFMG](https://www.ufmg.br/))*  
-> <sup>4</sup> *Operations Research and Complex Systems Lab. - Universidade Federal de Minas Gerais ([url](http://orcslab.ppgee.ufmg.br/))*
+> <sup>3</sup> *Dept. Electrical Engineering, Universidade Federal de Minas Gerais ([url](http://dee.ufmg.br/)*  
+> <sup>4</sup> *Operations Research and Complex Systems Lab. - Universidade Federal de Minas Gerais ([url](https://orcslab.github.io/))*
 
 ## 1. Overview
 A more sustainable energy matrix can be achieved by an integrated approach of energy generation and final consumer in the self-production. This alternative can reduce energy costs for consumer agents and enables the maturation and boosting of distributed generation technologies. The use of reliable cost models along with smartgrid technologies enables more economically efficient energy systems. Energy solutions that were once rejected become viable solution, such as electric energy generation using biogas. This work develops a cost model for electrical and mechanical energy generation for local consumers in a microgrid producing biogas. The model considers a dual-fuel motor to generate electrical energy using a variable mixture of biogas and other fuel and the biomethane upgrading system to supply the mechanical demands.
