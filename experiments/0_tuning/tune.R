@@ -2,8 +2,8 @@ library("irace")
 
 # Load tuning scenario
 scenario <- readScenario(filename = "scenario.txt", scenario = defaultScenario())
-#checkIraceScenario(scenario = scenario)
+checkIraceScenario(scenario = scenario)
 
 # Start tuning
-irace.main(scenario = scenario)
+#irace.main(scenario = scenario)
 

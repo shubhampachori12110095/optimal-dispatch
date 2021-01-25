@@ -32,13 +32,15 @@ STDOUT=c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stdout
 STDERR=c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stderr
 
 # Path to the software.
-EXE="PYTHONPATH=\"../..\" python3 -m optimaldispatch optimize"
+export PYTHONPATH="../.."
+EXE="python3 -m optimaldispatch optimize"
 
 # Fixed parameters that should be always passed.
 FIXED_PARAMS="--verbosity 0 --param-file ../../algorithm-params.txt"
 
 # Build a command line with all parameters to run.
-${EXE} ${FIXED_PARAMS} --seed ${SEED} ${CONFIG_PARAMS} --instance ${INSTANCE} --solution ${CONFIG_ID}_${SEED}_${INSTANCE} 1> $STDOUT 2> $STDERR
+mkdir -p ./solutions
+${EXE} ${FIXED_PARAMS} --seed ${SEED} ${CONFIG_PARAMS} --instance ${INSTANCE} --solution ./solutions/${CONFIG_ID}+${INSTANCE_ID}_${SEED}.json 1> $STDOUT 2> $STDERR
 
 # The output of the candidate $CONFIG_ID should be written in the file c${CONFIG_ID}.stdout.
 # Does this file exist?
@@ -51,7 +53,15 @@ fi
 # Ok, the file exist. It contains the whole output.
 # This script should return a single numerical value, the best objective value found.
 # The following line is to extract this value from the output file.
-OBJECTIVE=$(cat ${STDOUT} | cut -d ' ' -f1)
+RESULT=$(cat ${STDOUT} | cut -d ':' -f2 | tr '\n' ' ' | xargs)
+COST=$(echo ${RESULT} | cut -d ' ' -f1)
+INF_G=$(echo ${RESULT} | cut -d ' ' -f4)
+INF_H=$(echo ${RESULT} | cut -d ' ' -f5)
+INF_TOTAL=$(echo "${INF_G} + ${INF_H}" | bc)
+
+WEIGHT=0.9
+OBJECTIVE=$(echo "((1.0 - ${WEIGHT}) * ${COST}) + (${WEIGHT} * ${INF_TOTAL})" | bc)
+
 if ! [[ "$OBJECTIVE" =~ ^[-+0-9.e]+$ ]] ; then
     error "${STDOUT}: Output is not a number"
 fi
