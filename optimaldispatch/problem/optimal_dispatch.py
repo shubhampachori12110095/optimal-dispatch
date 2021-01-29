@@ -71,10 +71,22 @@ class OptimalDispatch(object):
         for i in range(0, self.n_intervals):
             if battery_energy[i] > 0:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] * self.battery["eff_charge"]
-                battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
+
+                # Fix battery energy to avoid battery load greater than the maximum allowed
+                if battery_load[i] > self.battery["max_load"]:
+                    battery_load[i] = self.battery["max_load"]
+                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) / self.battery["eff_charge"]
+
             else:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] / self.battery["eff_discharge"]
-                battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
+
+                # Fix battery energy to avoid battery load lower than zero
+                if battery_load[i] < 0.0:
+                    battery_load[i] = 0.0
+                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) * self.battery["eff_discharge"]
+
+            # Compute battery use cost
+            battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
 
         # Generators cost
         generators_status_changed = [[]] * self.n_generators
@@ -328,10 +340,22 @@ class OptimalDispatch(object):
         for i in range(0, self.n_intervals):
             if battery_energy[i] > 0:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] * self.battery["eff_charge"]
-                battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
+
+                # Fix battery energy to avoid battery load greater than the maximum allowed
+                if battery_load[i] > self.battery["max_load"]:
+                    battery_load[i] = self.battery["max_load"]
+                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) / self.battery["eff_charge"]
+
             else:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] / self.battery["eff_discharge"]
-                battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
+
+                # Fix battery energy to avoid battery load lower than zero
+                if battery_load[i] < 0.0:
+                    battery_load[i] = 0.0
+                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) * self.battery["eff_discharge"]
+
+            # Compute battery use cost
+            battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
 
         # Generators cost
         generators_status_changed = [[]] * self.n_generators
