@@ -77,7 +77,7 @@ def SaNSDE(feval, var_lb, var_ub, params=Parameters(), seed=None, verbosity=0, d
 
     # Drawing
     if draw_function is not None and draw_frequency > 0:
-        draw_function(population_x, population_f)
+        draw_function(population_x[best_idx], population_x)
 
     # Counters
     iteration = 0
@@ -227,7 +227,7 @@ def SaNSDE(feval, var_lb, var_ub, params=Parameters(), seed=None, verbosity=0, d
         # Plot
         if draw_function is not None and draw_frequency > 0:
             if iteration % draw_frequency == 0:
-                draw_function(population_x, population_f)
+                draw_function(population_x[best_idx], population_x)
 
         # Change between exploration and exploitation phases, if dynamic selection is set
         if selection_strategy == "dynamic":

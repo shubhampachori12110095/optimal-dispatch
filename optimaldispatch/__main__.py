@@ -28,7 +28,14 @@ def _optimize(args):
     # Create a drawing function, if enabled
     draw_function = None
     if draw_frequency > 0:
-        draw_function = lambda x, fval: opt.utils.draw_best(problem, x, fval, block=False, show=True, interactive=True)
+
+        # Draw best solution
+        draw_function = lambda best, population: opt.utils.draw_solution(problem, opt.utils.decode_solution(problem, best),
+                                                                         block=False, show=True, interactive=True)
+
+        # # Draw variables convergence
+        # draw_function = lambda best, population: opt.utils.draw_convergence(best, population, x_lb, x_ub, block=False,
+        #                                                                     show=True, interactive=True)
 
     # Algorithm's parameters
     params = opt.utils.Parameters()

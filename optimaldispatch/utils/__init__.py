@@ -1,3 +1,4 @@
 from .parameters import *
-from .encoder import *
+from .draw import *
 from .create_instance import *
+from .encoder import *
