@@ -61,6 +61,8 @@ def create_instance(output_file, demand_file, generators_file, battery_file, fue
         data["battery"]["eff_charge"] = float(row["EFFICIENCY.CHARGE"])
         data["battery"]["eff_discharge"] = float(row["EFFICIENCY.DISCHARGE"])
         data["battery"]["max_load"] = float(row["MAX.LOAD"])
+        data["battery"]["max_flow"] = float(row["MAX.FLOW"])
+        data["battery"]["dod"] = float(row["MAX.DOD"])
         data["battery"]["cost"] = float(row["COST"])
         break
 

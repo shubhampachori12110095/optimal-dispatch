@@ -179,6 +179,8 @@
     "eff_charge": 0.95,
     "eff_discharge": 0.93,
     "max_load": 30.0,
+    "max_flow": 15.0,
+    "dod": 0.8,
     "cost": 0.49
   },
   "biogas": {

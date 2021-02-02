@@ -71,19 +71,8 @@ class OptimalDispatch(object):
         for i in range(0, self.n_intervals):
             if battery_energy[i] > 0:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] * self.battery["eff_charge"]
-
-                # Fix battery energy to avoid battery load greater than the maximum allowed
-                if battery_load[i] > self.battery["max_load"]:
-                    battery_load[i] = self.battery["max_load"]
-                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) / self.battery["eff_charge"]
-
             else:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] / self.battery["eff_discharge"]
-
-                # Fix battery energy to avoid battery load lower than zero
-                if battery_load[i] < 0.0:
-                    battery_load[i] = 0.0
-                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) * self.battery["eff_discharge"]
 
             # Compute battery use cost
             battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
@@ -340,19 +329,8 @@ class OptimalDispatch(object):
         for i in range(0, self.n_intervals):
             if battery_energy[i] > 0:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] * self.battery["eff_charge"]
-
-                # Fix battery energy to avoid battery load greater than the maximum allowed
-                if battery_load[i] > self.battery["max_load"]:
-                    battery_load[i] = self.battery["max_load"]
-                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) / self.battery["eff_charge"]
-
             else:
                 battery_load[i] = battery_load[i - 1] + battery_energy[i] / self.battery["eff_discharge"]
-
-                # Fix battery energy to avoid battery load lower than zero
-                if battery_load[i] < 0.0:
-                    battery_load[i] = 0.0
-                    battery_energy[i] = (battery_load[i] - battery_load[i - 1]) * self.battery["eff_discharge"]
 
             # Compute battery use cost
             battery_use_cost[i] = abs(battery_energy[i] * self.battery["cost"])
@@ -572,8 +550,8 @@ class OptimalDispatch(object):
         details += "Engine biogas consumption: {:.2f} kWh ({:.2f}%)\n".format(biogas_production, (biogas_production / biogas_production) * 100)
         details += "Bus fleet biomethane: {:.2f} kWh ({:.2f}%)\n".format(remaining_biogas, (remaining_biogas / biogas_production) * 100)
         details += "Purchased VNG: {:.2f} m³\n".format(max(0, self.fuel_buses_demand - biomethane_disp))
-        details += "Battery initial load: {:.2f}\n".format(self.battery["initial_load"])
-        details += "Battery final load: {:.2f}\n".format(battery_load[len(battery_load) - 2])
+        details += "Battery initial load: {:.2f} KWh\n".format(self.battery["initial_load"])
+        details += "Battery final load: {:.2f} KWh\n".format(battery_load[len(battery_load) - 2])
 
         if self.enable_cvar:
             details += "CVaR: {:.2f} (Probability level: {:.2f})".format(cvar, alpha)
