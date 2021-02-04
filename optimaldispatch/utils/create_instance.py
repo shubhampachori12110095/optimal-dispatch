@@ -17,13 +17,25 @@ def create_instance(output_file, demand_file, generators_file, battery_file, fue
     :param solar_file: CSV file with solar data.
     """
     data = dict()
-
-    # Read demand data
     data["n_intervals"] = 0
+    data["n_generators"] = 0
+    data["business_hours"] = {
+        "start": 8,  # 8:00 AM
+        "end": 17    # 5:00 PM
+    }
     data["demand"] = []
     data["selling_price"] = []
     data["buying_price"] = []
+    data["generators"] = []
+    data["battery"] = dict()
+    data["biogas"] = dict()
+    data["ethanol"] = dict()
+    data["biomethane"] = dict()
+    data["gnv"] = dict()
+    data["buses_demand"] = None
+    data["solar_energy"] = []
 
+    # Read demand data
     demand_reader = csv.DictReader(demand_file, delimiter=",")
     for row in demand_reader:
         data["n_intervals"] += 1
@@ -32,9 +44,6 @@ def create_instance(output_file, demand_file, generators_file, battery_file, fue
         data["buying_price"].append(float(row["BUYING.PRICE"]))
 
     # Read generators data
-    data["n_generators"] = 0
-    data["generators"] = []
-
     generators_reader = csv.DictReader(generators_file, delimiter=",")
     for row in generators_reader:
         generator_data = dict()
@@ -53,8 +62,6 @@ def create_instance(output_file, demand_file, generators_file, battery_file, fue
         data["generators"].append(generator_data)
 
     # Read battery data
-    data["battery"] = dict()
-
     battery_reader = csv.DictReader(battery_file, delimiter=",")
     for row in battery_reader:
         data["battery"]["initial_load"] = float(row["INITIAL.LOAD"])
@@ -67,12 +74,6 @@ def create_instance(output_file, demand_file, generators_file, battery_file, fue
         break
 
     # Read fuel data
-    data["biogas"] = dict()
-    data["ethanol"] = dict()
-    data["biomethane"] = dict()
-    data["gnv"] = dict()
-    data["fuel_buses_demand"] = None
-
     fuel_reader = csv.DictReader(fuel_file, delimiter=",")
     for row in fuel_reader:
         data["biogas"]["mean_production"] = float(row["BIOGAS.MEAN.PRODUCTION"])
@@ -81,18 +82,18 @@ def create_instance(output_file, demand_file, generators_file, battery_file, fue
         data["biogas"]["maintenance_cost"] = (float(row["BG.MAINTENANCE.COST.A"]), float(row["BG.MAINTENANCE.COST.B"]))
         data["biogas"]["transport_cost"] = float(row["TRANSPORT.COST"])
         data["biogas"]["consumption"] = (float(row["BG.CONSUMPTION.A"]), float(row["BG.CONSUMPTION.B"]))
-        data["ethanol"]["cost"] = float(row["ETHANOL.COST"]) / 5.93
+        data["ethanol"]["cost"] = float(row["ETHANOL.COST"]) / 5.93  # convert from $/liter to $/KWh
         data["ethanol"]["disponibility"] = float(row["ETHANOL.DISPONIBILITY"])
         data["biomethane"]["efficiency"] = float(row["BIOMETHANE.EFFICIENCY"])
         data["biomethane"]["maintenance_cost"] = (float(row["BM.MAINTENANCE.COST.A"]), float(row["BM.MAINTENANCE.COST.B"]))
-        data["biomethane"]["consumption"] = float(row["BM.CONSUMPTION.A"])
+        data["biomethane"]["energy_consumption"] = float(row["BM.CONSUMPTION.A"])
         data["gnv"]["cost"] = float(row["GNV.COST"])
-        data["fuel_buses_demand"] = float(row["BUSES.DEMAND"])
+        data["buses_demand"] = float(row["BUSES.DEMAND"])
         break
 
-    # Read solar data
-    data["solar_energy"] = []
+    data["biomethane"]["compression_capacity"] = 60  # m3/h
 
+    # Read solar data
     solar_reader = csv.DictReader(solar_file, delimiter=",")
     for row in solar_reader:
         data["solar_energy"].append(float(row["SOLAR"]))

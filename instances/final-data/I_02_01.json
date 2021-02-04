@@ -1,5 +1,10 @@
 {
   "n_intervals": 48,
+  "n_generators": 1,
+  "business_hours": {
+    "start": 8,
+    "end": 17
+  },
   "demand": [
     21.24,
     19.29,
@@ -150,7 +155,6 @@
     0.479,
     0.479
   ],
-  "n_generators": 1,
   "generators": [
     {
       "initial_state": 0,
@@ -207,12 +211,13 @@
       5.0,
       10.0
     ],
-    "consumption": 0.36
+    "energy_consumption": 0.36,
+    "compression_capacity": 60
   },
   "gnv": {
     "cost": 2.84
   },
-  "fuel_buses_demand": 180.0,
+  "buses_demand": 180.0,
   "solar_energy": [
     0.0,
     0.0,

@@ -1,3 +1,4 @@
+import signal
 import math
 import random
 import time
@@ -10,6 +11,25 @@ __all__ = ["SaNSDE"]
 
 
 ########################################################################################################################
+# Global variables and functions to handle system events (signals)
+
+keyboard_interrupt = False
+
+keyboard_interrupt_handler_SIGBREAK = signal.getsignal(signal.SIGBREAK)
+keyboard_interrupt_handler_SIGINT = signal.getsignal(signal.SIGINT)
+
+
+def on_system_signal(signum, stack):
+    global keyboard_interrupt
+    if signum == signal.SIGBREAK or signum == signal.SIGINT:
+        print("Interrupt signal received... wait while the program ends.")
+        print("To force it to end, press CTRL+C again.")
+        keyboard_interrupt = True
+        signal.signal(signal.SIGBREAK, keyboard_interrupt_handler_SIGBREAK)
+        signal.signal(signal.SIGINT, keyboard_interrupt_handler_SIGINT)
+
+
+########################################################################################################################
 def SaNSDE(feval, var_lb, var_ub, params=Parameters(), seed=None, verbosity=0, draw_function=None, draw_frequency=0):
     """
     Implements the Self-adaptive Differential Evolution with Neighborhood Search [1].
@@ -17,6 +37,11 @@ def SaNSDE(feval, var_lb, var_ub, params=Parameters(), seed=None, verbosity=0, d
     [1] YANG, Z.; TANG, K. ; YAO, X. Self-adaptive Differential Evolution with Neighborhood Search. IEEE Congress on
         Evolutionary Computation (IEEE World Congress on Computational Intelligence), 2008.
     """
+
+    # Set signal handler
+    global keyboard_interrupt
+    signal.signal(signal.SIGBREAK, on_system_signal)
+    signal.signal(signal.SIGINT, on_system_signal)
 
     # Verbosity parameters
     verbose = (verbosity > 0)
@@ -86,7 +111,7 @@ def SaNSDE(feval, var_lb, var_ub, params=Parameters(), seed=None, verbosity=0, d
     perform_exploitation = False
 
     # Main loop
-    while iteration < iteration_limit and time.perf_counter() - time_begin < time_limit:
+    while iteration < iteration_limit and time.perf_counter() - time_begin < time_limit and not keyboard_interrupt:
 
         # Increment the iteration counter
         iteration += 1
