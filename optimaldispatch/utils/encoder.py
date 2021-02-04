@@ -25,7 +25,9 @@ def encode_problem(problem: OptimalDispatch):
     for i in range(0, problem.n_generators):
 
         # Generator rate
-        var_lb += [problem.generators[i]["lower_rate"] * 0.5] * problem.n_intervals
+        #var_lb += [problem.generators[i]["lower_rate"] * 0.5] * problem.n_intervals
+        delta = problem.generators[i]["upper_rate"] - problem.generators[i]["lower_rate"]
+        var_lb += [problem.generators[i]["lower_rate"] - delta] * problem.n_intervals
         var_ub += [problem.generators[i]["upper_rate"]] * problem.n_intervals
 
         # Generators fuel composition
@@ -33,8 +35,8 @@ def encode_problem(problem: OptimalDispatch):
         var_ub += [3] * problem.n_intervals
 
     # Variables related to the battery
-    var_lb += [-problem.battery["max_load"] * problem.battery["eff_discharge"]] * problem.n_intervals
-    var_ub += [problem.battery["max_load"] / problem.battery["eff_charge"]] * problem.n_intervals
+    var_lb += [-problem.battery["max_flow"]] * problem.n_intervals
+    var_ub += [problem.battery["max_flow"]] * problem.n_intervals
 
     # Variables related to biogas production
     if problem.enable_cvar:
@@ -64,7 +66,7 @@ def encode_solution(problem: OptimalDispatch, solution):
         x += [generators_status[i][j] * generators_rate[i][j] for j in range(0, problem.n_intervals)]
         x += generators_fuel_composition[i]
     x += battery_energy
-    x += biogas_production
+    x += [biogas_production]
 
     return x
 
@@ -82,31 +84,50 @@ def decode_solution(problem: OptimalDispatch, x):
     generators_status = []
     generators_rate = []
     generators_fuel_composition = []
-    battery_load = [0] * problem.n_intervals
-    biogas_production = []
+    battery_energy = [0] * problem.n_intervals
+    biogas_production = 0
 
     # Generators
     for i in range(0, problem.n_generators):
 
-        generators_rate.append([0.0] * problem.n_intervals)
         generators_status.append([0] * problem.n_intervals)
+        generators_rate.append([0.0] * problem.n_intervals)
         generators_fuel_composition.append([0] * problem.n_intervals)
 
         for j in range(0, problem.n_intervals):
-            generators_rate[i][j] = x[idx]
             generators_status[i][j] = 1 if x[idx] >= problem.generators[i]["lower_rate"] else 0
+            generators_rate[i][j] = x[idx] * generators_status[i][j]
             idx += 1
 
         for j in range(0, problem.n_intervals):
             generators_fuel_composition[i][j] = round(x[idx])
             idx += 1
 
-    # Battery load
+    # Battery energy
     for j in range(0, problem.n_intervals):
-        battery_load[j] = x[idx]
+        battery_energy[j] = x[idx]
         idx += 1
 
     # Biogas
     biogas_production = x[idx]
 
-    return generators_status, generators_rate, generators_fuel_composition, battery_load, biogas_production
+    # Fix battery energy to avoid invalid values of battery load
+    battery_load = ([0.0] * problem.n_intervals) + [problem.battery["initial_load"]]
+    for j in range(0, problem.n_intervals):
+
+        if battery_energy[j] > 0:
+            battery_load[j] = battery_load[j - 1] + battery_energy[j] * problem.battery["eff_charge"]
+            if battery_load[j] > problem.battery["max_load"]:
+                battery_load[j] = problem.battery["max_load"]
+                battery_energy[j] = (battery_load[j] - battery_load[j - 1]) / problem.battery["eff_charge"]
+
+        else:
+            battery_load[j] = battery_load[j - 1] + battery_energy[j] / problem.battery["eff_discharge"]
+            aux = min(battery_load[j - 1], problem.battery["max_load"] * problem.battery["dod"])
+            if battery_load[j] < aux:
+                battery_load[j] = aux
+                battery_energy[j] = (battery_load[j] - battery_load[j - 1]) * problem.battery["eff_discharge"]
+    # end battery variable correction
+
+    # Return the components of the solution
+    return generators_status, generators_rate, generators_fuel_composition, battery_energy, biogas_production
